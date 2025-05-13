@@ -3,8 +3,6 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import { Calendar, Clock, Edit } from 'react-native-feather';
 
 
-
-  
 const TaskScreen = () => {
     
     return (

@@ -8,20 +8,19 @@ import {
   StatusBar,
   FlatList,
   TextInput,
+  Dimensions,
 
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Search, Image } from 'react-native-feather';
 
-const placeholderImage = 'https://via.placeholder.com/40';
 
 // TaskItem Component
 const TaskItem = ({ name, quantity, onAdd, onIncrement, onDecrement }) => {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.itemLeft}>
-
             <Image color="grey" size={20} style={styles.itemImage}/>
         <Text style={styles.itemName}>{name}</Text>
       </View>
@@ -44,13 +43,14 @@ const TaskItem = ({ name, quantity, onAdd, onIncrement, onDecrement }) => {
     </View>
   );
 };
+const { height } = Dimensions.get('window');
 
 const AddTaskScreen = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const [tasks, setTasks] = useState([
-    { id: '1', name: 'Task Name1', quantity: 0 },
+    { id: '1', name: 'Task Name1', quantity: 1 },
     { id: '2', name: 'Task Name2', quantity: 0 },
     { id: '3', name: 'Task Name3', quantity: 0 },
     { id: '4', name: 'Task Name4', quantity: 0 },
@@ -59,19 +59,20 @@ const AddTaskScreen = () => {
   ]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-  <AntDesign name="back" size={26} style={{ color: "black" }} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Task</Text>
-        <TouchableOpacity>
-          <Text style={styles.showSelected}>Show Selected</Text>
-        </TouchableOpacity>
-      </View>
+     <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+           <TouchableOpacity 
+                     style={styles.backButton} 
+                     onPress={() => navigation.goBack()}
+                   >
+                  <AntDesign name="back" size={26} color="black" />
+                   </TouchableOpacity>
+                   <Text style={styles.title}>Cart</Text>
+                   <TouchableOpacity>
+                   <Text style={styles.showSelected}>Show All</Text>
+                   </TouchableOpacity>
+          </View>
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -88,6 +89,7 @@ const AddTaskScreen = () => {
       </View>
 
       {/* Task List */}
+      <View style={styles.singleCardContainer}>
       <FlatList
         data={tasks.filter(task =>
           task.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -123,12 +125,12 @@ const AddTaskScreen = () => {
         )}
         style={styles.taskList}
       />
-
+</View>
       {/* Submit Button */}
       <TouchableOpacity style={styles.submitButton}>
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -136,14 +138,22 @@ const AddTaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    backgroundColor: '#F2F6FF',
+    padding: 10,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+  },
+  backButton: {
+    padding: 4,
+    marginRight: 12,
   },
   headerTitle: {
     fontSize: 18,
@@ -151,13 +161,14 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   showSelected: {
-    color: '#FF6A00',
+    color: '#5A81FA',
     fontWeight: '600',
     fontSize: 14,
+    marginLeft:15
   },
   searchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F1F1F1',
+    backgroundColor: '#fff',
     borderRadius: 10,
     paddingHorizontal: 12,
     alignItems: 'center',
@@ -177,22 +188,27 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 12,
     padding: 10,
     marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
+    
+  },
+  singleCardContainer: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+  borderRadius:20,
+    position: 'relative',
+    minHeight: height * 0.75,
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemImage: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
     borderRadius: 8,
     marginRight: 10,
     backgroundColor: 'white',

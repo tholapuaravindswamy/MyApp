@@ -8,103 +8,118 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../../../App';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
-type ResetPasswordScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ResetPassword'>;
-
-type Props = {
-  navigation: ResetPasswordScreenNavigationProp;
-};
-
-const HotelResetPasswordScreen: React.FC<Props> = ({ navigation }) => {
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+const HotelResetPasswordScreen = ({ navigation }) => {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleReset = (): void => {
+  const handleReset = () => {
     if (newPassword !== confirmPassword) {
       // Handle password mismatch
       return;
     }
-    navigation.navigate('Login');
+    navigation.navigate('Acceptance');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
       
-      <View style={styles.topSection}>
-        <View style={styles.logoContainer}>
-          <View style={styles.logo} />
-        </View>
-        
-        <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
-        <Text style={styles.subtitle}>Effortlessly Powerful, Incredibly Simple.</Text>
-      </View>
-      
-      <View style={styles.bottomSection}>
-        <Text style={styles.resetTitle}>Reset</Text>
-        <Text style={styles.resetSubtitle}>Please enter new password</Text>
-        
-        {/* <Text style={styles.errorText}>
-          Your login is temporarily suspended due to multiple incorrect login attempts. {'\n'}
-          Please contact the admin for assistance.
-        </Text> */}
-        
-        <Text style={styles.inputLabel}>New Password</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={newPassword}
-            onChangeText={setNewPassword}
-            secureTextEntry={!showNewPassword}
-          />
-          <TouchableOpacity 
-            onPress={() => setShowNewPassword(!showNewPassword)} 
-            style={styles.icon}>
-            <MaterialCommunityIcons
-              name={showNewPassword ? "eye-off" : "eye"}
-              size={24}
-              color="gray"
-            />
-          </TouchableOpacity>
-        </View>
-        
-        <Text style={styles.inputLabel}>Re-enter New Password</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry={!showConfirmPassword}
-          />
-          <TouchableOpacity 
-            onPress={() => setShowConfirmPassword(!showConfirmPassword)} 
-            style={styles.icon2}>
-            <MaterialCommunityIcons
-              name={showConfirmPassword ? "eye-off" : "eye"}
-              size={24}
-              color="gray"
-            />
-          </TouchableOpacity>
-        </View>
-        
-        <TouchableOpacity style={styles.resetButton} 
-        onPress={() => navigation.navigate('Acceptance')}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardContainer}
+      >
+        <ScrollView 
+          bounces={false} 
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.resetButtonText}>Reset</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.footerText}>
-          © 2025 NeoTeknos Hospitality. All rights reserved.
-        </Text>
-      </View>
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logo} />
+            </View>
+            <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
+            <Text style={styles.subtitle}>Effortlessly Powerful, Incredibly Simple.</Text>
+          </View>
+          
+          {/* Content Section */}
+          <View style={styles.content}>
+            <View style={styles.contentInner}>
+              <Text style={styles.resetTitle}>Reset</Text>
+              <Text style={styles.resetSubtitle}>Please enter new password</Text>
+              
+              <View style={styles.formContainer}>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>New Password</Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={newPassword}
+                      onChangeText={setNewPassword}
+                      secureTextEntry={!showNewPassword}
+                      placeholderTextColor="#999"
+                    />
+                    <TouchableOpacity 
+                      onPress={() => setShowNewPassword(!showNewPassword)} 
+                      style={styles.iconButton}
+                    >
+                      <MaterialCommunityIcons
+                        name={showNewPassword ? "eye-off" : "eye"}
+                        size={24}
+                        color="gray"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Re-enter New Password</Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      secureTextEntry={!showConfirmPassword}
+                      placeholderTextColor="#999"
+                    />
+                    <TouchableOpacity 
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)} 
+                      style={styles.iconButton}
+                    >
+                      <MaterialCommunityIcons
+                        name={showConfirmPassword ? "eye-off" : "eye"}
+                        size={24}
+                        color="gray"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={styles.resetButton} 
+                  onPress={handleReset}
+                >
+                  <Text style={styles.resetButtonText}>Reset</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            <Text style={styles.copyright}>© 2025 NeoTeknos Hospitality. All rights reserved.</Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -114,103 +129,114 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  topSection: {
-    flex: 0.4,
+  keyboardContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  header: {
+    height: height * 0.35, // 30% of screen height
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   logoContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   logo: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#ccc',
-    borderRadius: 12,
+    width: 60,
+    height: 60,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
   },
   title: {
+    color: 'white',
     fontSize: 19,
     fontWeight: 'bold',
-    color: '#fff',
     textAlign: 'center',
   },
   subtitle: {
-    color: '#FF5C00',
+    color: '#FF5722',
     fontSize: 15,
     textAlign: 'center',
+    marginTop: 5,
   },
-  bottomSection: {
-    flex: 0.6,
-    backgroundColor: '#fff',
+  content: {
+    flex: 1,
+    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  contentInner: {
+    flex: 1,
   },
   resetTitle: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: 'black',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+    color: 'black'
   },
   resetSubtitle: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
-  },
-  errorText: {
-    color: '#FF3B30',
-    fontSize: 14,
+    color: '#000',
     textAlign: 'center',
     marginBottom: 20,
   },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  inputGroup: {
+    marginTop: 25,
+  },
   inputLabel: {
-    fontSize: 16,
-    color: 'black',
-    alignSelf: 'flex-start',
+    fontSize: 14,
+    color: '#666',
     marginBottom: 5,
   },
   inputContainer: {
-    width: '100%',
-    position: 'relative',
-  },
-  input: {
-    width: '100%',
-    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
+  },
+  input: {
+    flex: 1,
+    height: 40,
     fontSize: 16,
-    padding: 8,
     color: 'black',
-    bottom:8
+    paddingVertical: 8,
   },
-  icon: {
-    position: 'absolute',
-    right: 10,
+  iconButton: {
+    padding: 8,
   },
-  icon2: {
-    position: 'absolute',
-    right: 10,
+  buttonContainer: {
+    marginBottom: 20,
   },
   resetButton: {
-    width: '100%',
+    backgroundColor: '#FF5722',
+    borderRadius: 5,
     height: 40,
-    backgroundColor: '#FF5C00',
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
   },
   resetButtonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  footerText: {
+  copyright: {
     fontSize: 12,
-    color: '#666',
+    color: '#000',
     textAlign: 'center',
-    marginTop: 95,
-    position:'relative'
+    marginTop: 20,
+    marginBottom: 10,
   },
 });
 

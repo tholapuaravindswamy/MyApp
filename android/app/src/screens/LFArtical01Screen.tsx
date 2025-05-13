@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,174 +6,236 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
-  Platform,
-  KeyboardAvoidingView,
-  Modal,
+  TextInput,
+  ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import SelectField from '../components/SelectField';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
-import Entypo from 'react-native-vector-icons/Entypo';
-import { Download, Trash2, UploadCloud } from 'react-native-feather';
 
 
-const LFArtical01Screen = () => {
-  const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
+const ArticleScreen = ({ navigation, route }) => {
+  const articleId = route.params?.articleId || '01';
+  
+  useEffect(() => {
+    if (route.params?.selectedCategory && route.params?.field) {
+      const field = route.params.field;
+      setFormData(prevData => ({
+        ...prevData,
+        [field]: route.params.selectedCategory
+      }));
+    }
+  }, [route.params?.selectedCategory, route.params?.field]);
+  
+ 
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    make: '',
+    colour: '',
+    category: '',
+    storedUntil: '',
+    storageLocation: '',
+    attachment: '',
+    status: '',
+  });
 
-  const AttachmentPopup = ({ visible, onClose }) => {
-    const attachments = [
-        { id: '1', uri: 'https://via.placeholder.com/150x150' },
-        { id: '2', uri: 'https://via.placeholder.com/150x150' },
-        { id: '3', uri: 'https://via.placeholder.com/150x150' },
-      ];  
-    return (
-      <Modal visible={visible} transparent animationType="slide">
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <View style={{flexDirection:'row'}}>
-            <TouchableOpacity 
-                  style={styles.backButton}
-                  onPress={() => navigation.goBack()}
-                >
-                  <AntDesign name="back" size={26} color="black" />
-                </TouchableOpacity>
-            <Text style={styles.modalTitle}>Attachment</Text>
-            </View>
-            <TouchableOpacity style={styles.uploadContainer}>
-                   <UploadCloud width={24} height={24} color="#666666" />
-                   <Text style={styles.uploadText}>Upload</Text>
-                 </TouchableOpacity>
-           
-                 {/* Attachments */}
-                 <View style={styles.attachmentsContainer}>
-                   {attachments.map((attachment) => (
-                     <View key={attachment.id} style={styles.attachmentItem}>
-                       <View style={styles.attachmentPreview} />
-                       <View style={styles.attachmentActions}>
-                         <TouchableOpacity style={styles.actionButton}>
-                           <Trash2 width={16} height={16} color="#666666" />
-                         </TouchableOpacity>
-                         <TouchableOpacity style={styles.actionButton}>
-                           <Download width={16} height={16} color="#666666" />
-                         </TouchableOpacity>
-                       </View>
-                     </View>
-                   ))}
-                 </View>
-  <TouchableOpacity style={styles.editButton}
-        //   onPress={HandleEdit}
-          >
-            <Text style={styles.editButtonText}>Submit</Text>
-          </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    );
+  const handleInputChange = (field, value) => {
+    setFormData({
+      ...formData,
+      [field]: value,
+    });
   };
+
+  const handleSubmit = () => {
+    // console.log('Form data submitted:', formData);
+    // // Validate and submit form data
+    // navigation.goBack();
+  };
+
+  const openSelector = (field) => {
+    console.log('Opening selector for', field);
+    if (field === 'category') {
+      navigation.navigate('LFCategory', { 
+        currentCategory: formData.category,
+        field: 'category'
+      });
+    } else 
+    if (field === 'storedUntil') {
+           // Navigate to attachment selector
+        } else if (field === 'storageLocation') {
+          navigation.navigate('LFStorage', { 
+            currentCategory: formData.category,
+            field: 'storageLocation'
+          });   
+         } else if (field === 'attachment') {
+          navigation.navigate('LFAttachment', { 
+            currentCategory: formData.category,
+            field: 'attachment'
+          });      } else if (field === 'status') {
+      navigation.navigate('LFStatus', { 
+        currentCategory: formData.category,
+        field: 'status'
+      });  
+      }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f7fa" />
+      
       {/* Header */}
-       <View style={styles.header}>
-                <TouchableOpacity 
-                  style={styles.backButton}
-                  onPress={() => navigation.goBack()}
-                >
-                  <AntDesign name="back" size={26} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Article - 01</Text>
-
-                <AttachmentPopup visible={modalVisible} onClose={() => setModalVisible(false)} />
-
-             <TouchableOpacity style={styles.attachButton} onPress={() => setModalVisible(true)}>
-                <Entypo name="attachment" size={16} style={styles.attachButtonText} />
-             </TouchableOpacity>
-              </View>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => navigation.goBack()}
+        >
+       <AntDesign name="back" size={26} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Article-{articleId}</Text>
+        <View style={styles.headerRight} />
+      </View>
       
       {/* Form */}
-      <View style={styles.form}>
-      <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Name<Text style={styles.requiredStar}>*</Text></Text>
+      <ScrollView style={styles.formContainer}>
+        {/* Name */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>
+            Name<Text style={styles.requiredStar}>*</Text>
+          </Text>
           <TextInput
-        placeholder='Enter Name'
-        placeholderTextColor={'#ccc'}
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 4,
-          padding: 10,
-          fontSize: 16,
-        }}
-        />
-      </View>
-        
-      <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Description<Text style={styles.requiredStar}>*</Text></Text>
-          <TextInput
-        placeholder='Enter Text'
-        placeholderTextColor={'#ccc'}
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 4,
-          padding: 10,
-          fontSize: 16,
-        }}
-        />
-      </View>
-        
-      <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Make<Text style={styles.requiredStar}>*</Text></Text>
-          <TextInput
-        placeholder='Enter Text'
-        placeholderTextColor={'#ccc'}
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 4,
-          padding: 10,
-          fontSize: 16,
-        }}
-        />
-      </View>
-        
-      <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>color<Text style={styles.requiredStar}>*</Text></Text>
-          <TextInput
-        placeholder='Enter color'
-        placeholderTextColor={'#ccc'}
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 4,
-          padding: 10,
-          fontSize: 16,
-        }}
-        />
-      </View>
-        
-      <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Category<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
+            style={styles.textInput}
+            placeholder="Enter Text"
+            placeholderTextColor={'#999'}
+            value={formData.name}
+            onChangeText={(text) => handleInputChange('name', text)}
+          />
         </View>
-        <KeyboardAvoidingView>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Stored Untill<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
+        
+        {/* Description */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Description</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholderTextColor={'#999'}
+            placeholder="Enter Text"
+            value={formData.description}
+            onChangeText={(text) => handleInputChange('description', text)}
+          />
         </View>
-      </KeyboardAvoidingView>
-      </View>
-      
-      {/* Create Button */}
-      <TouchableOpacity 
-        style={styles.createButton}
-        onPress={() => navigation.navigate('LFGuestSearch')}
-      >
-        <Text style={styles.createButtonText}>Next</Text>
-      </TouchableOpacity>
+        
+        {/* Make */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Make</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter Text"
+            placeholderTextColor={'#999'}
+            value={formData.make}
+            onChangeText={(text) => handleInputChange('make', text)}
+          />
+        </View>
+        
+        {/* Colour */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Colour</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter Text"
+            placeholderTextColor={'#999'}
+            value={formData.colour}
+            onChangeText={(text) => handleInputChange('colour', text)}
+          />
+        </View>
+        
+        {/* Category */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>
+            Category<Text style={styles.requiredStar}>*</Text>
+          </Text>
+          <TouchableOpacity 
+            style={styles.selectorInput}
+            onPress={() => openSelector('category')}
+          >
+            <Text style={styles.selectorText}>
+              {formData.category || 'Select Option'}
+            </Text>
+            <Feather name="chevron-right" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Stored Until */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>
+            Stored Until<Text style={styles.requiredStar}>*</Text>
+          </Text>
+          <TouchableOpacity 
+            style={styles.selectorInput}
+            onPress={() => openSelector('storedUntil')}
+          >
+            <View style={styles.selectorContent}>
+              <Feather name="calendar" size={18} color="#666" style={styles.calendarIcon} />
+              <Text style={styles.selectorText}>
+                {formData.storedUntil || 'Select Option'}
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Storage Location */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>
+            Storage Location<Text style={styles.requiredStar}>*</Text>
+          </Text>
+          <TouchableOpacity 
+            style={styles.selectorInput}
+            onPress={() => openSelector('storageLocation')}
+          >
+            <Text style={styles.selectorText}>
+              {formData.storageLocation || 'Select Option'}
+            </Text>
+            <Feather name="chevron-right" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Attachment */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Attachment</Text>
+          <TouchableOpacity 
+            style={styles.selectorInput}
+            onPress={() => openSelector('attachment')}
+          >
+            <Text style={styles.selectorText}>
+              {formData.attachment || 'Select Option'}
+            </Text>
+            <Feather name="chevron-right" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Status */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>
+            Status<Text style={styles.requiredStar}>*</Text>
+          </Text>
+          <TouchableOpacity 
+            style={styles.selectorInput}
+            onPress={() => openSelector('status')}
+          >
+            <Text style={styles.selectorText}>
+              {formData.status || 'Select Option'}
+            </Text>
+            <Feather name="chevron-right" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Submit Button */}
+        <TouchableOpacity 
+          style={styles.submitButton}
+          onPress={handleSubmit}
+        >
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -182,163 +244,93 @@ const LFArtical01Screen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-  },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 1,
-        paddingVertical: 20,
-        borderBottomRightRadius: 20,
-        borderBottomLeftRadius: 20,
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    bottom:15
+    backgroundColor: '#f5f7fa',
+        padding: 10,
 
   },
-  backIcon: {
-    fontSize: 24,
-    fontWeight: '300',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 1,
+ paddingBottom:20
+  },
+  backButton: {
+    padding: 4,
+    marginRight: 12,
   },
   headerTitle: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: '500',
-    bottom:15,
-    right:80  
-   },
-  attachButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#E9ECEF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom:15
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
   },
-  attachButtonText: {
-    fontWeight: 'bold',
-    color: 'black',
+  headerRight: {
+    width: 28, // To balance the header
   },
-  form: {
+  formContainer: {
     flex: 1,
+    padding: 16,
+    backgroundColor:'white',
+    borderRadius:10,
+    
   },
-  fieldContainer: {
-    marginBottom: 20,
+  inputGroup: {
+    marginBottom: 16,
   },
-  fieldLabel: {
-    fontSize: 16,
+  inputLabel: {
+    fontSize: 14,
     fontWeight: '500',
+    color: '#000',
     marginBottom: 8,
-    color:'black'
   },
   requiredStar: {
     color: '#FF5722',
   },
-  createButton: {
-    backgroundColor: '#FF5722',
-    borderRadius: 8,
+  textInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    paddingHorizontal: 12,
     paddingVertical: 10,
-    alignItems: 'center',
-    marginBottom: 20,
+    fontSize: 14,
+    color:'#000'
   },
-  createButtonText: {
+  selectorInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectorContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  calendarIcon: {
+    marginRight: 8,
+  },
+  selectorText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  submitButton: {
+    backgroundColor: '#FF5722',
+    borderRadius: 4,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 30,
+  },
+  submitButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
   },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000aa',
-  },
-  modalContainer: {
-    backgroundColor: 'white',
-    width: '90%',
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    color:'black',
-    marginLeft:10
-  },
-  uploadContainer: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: 'black',
-    borderRadius: 8,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  uploadText: {
-    fontSize: 14,
-    color: '#666666',
-    marginTop: 8,
-  },
-  attachmentsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -4,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    padding:1,
-    borderRadius:8,
-  },
-  attachmentItem: {
-    width: '33.33%',
-    paddingHorizontal: 4,
-    marginTop:9,
-  },
-  attachmentPreview: {
-    aspectRatio: 1,
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-    top:5
-  },
-  attachmentActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-    bottom:25,
-  },
-  actionButton: {
-    padding: 4,
-    width: 22,
-    height: 22,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal:3
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
-  },
-  editButton: {
-    backgroundColor: '#FF5722',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    top:10
-  },
-  editButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
-  },
- 
 });
 
-export default LFArtical01Screen;
+export default ArticleScreen;
