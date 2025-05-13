@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,54 +9,73 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 const VerifyScreen = ({navigation}) => {
   const [otp, setOtp] = useState('');
+  
   const handleVerify = () => {
-navigation.navigate('ResetPassword');
+    navigation.navigate('ResetPassword');
   };
   
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
-      {/* Header Section */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <View style={styles.logo} />
-        </View>
-        <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
-        <Text style={styles.subtitle}>Effectively Powerful, Incredibly Simple</Text>
-      </View>
-      
-      {/* Content Section */}
-      <View style={styles.content}>
-        <Text style={styles.verifyTitle}>Verify</Text>
-        <Text style={styles.verifySubtitle}>Please enter the two factor authentication code</Text>
-       
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>OTP</Text>
-          <TextInput
-            style={styles.input}
-            value={otp}
-            onChangeText={setOtp}
-            keyboardType="number-pad"
-            maxLength={6}
-            placeholder=""
-          />
-        </View>
-        
-        <TouchableOpacity 
-              style={styles.verifyButton}
-              onPress={handleVerify}>
-             <Text style={styles.verifyButtonText}>Verify</Text>
-        </TouchableOpacity>
-        
-        <Text style={styles.copyright}>© 2023 NextTechnos Hospitality. All rights reserved.</Text>
-      </View>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardContainer}
+      >
+        <ScrollView 
+          bounces={false} 
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logo} />
+            </View>
+            <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
+            <Text style={styles.subtitle}>Effectively Powerful, Incredibly Simple</Text>
+          </View>
+          
+          {/* Content Section */}
+          <View style={styles.content}>
+            <View style={styles.contentInner}>
+              <Text style={styles.verifyTitle}>Verify</Text>
+              <Text style={styles.verifySubtitle}>Please enter the two factor authentication code</Text>
+              
+              <View style={styles.formContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>OTP</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={otp}
+                    onChangeText={setOtp}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    placeholder=""
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={styles.verifyButton}
+                  onPress={handleVerify}>
+                  <Text style={styles.verifyButtonText}>Verify</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            <Text style={styles.copyright}>© 2023 NextTechnos Hospitality. All rights reserved.</Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -66,8 +85,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  keyboardContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   header: {
-    height: '30%',
+    height: height * 0.35, // 30% of screen height
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -83,13 +108,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
     color: '#FF3B30',
-    fontSize: 14,
+    fontSize: 15,
     textAlign: 'center',
     marginTop: 5,
   },
@@ -99,6 +124,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
+    justifyContent: 'space-between',
+  },
+  contentInner: {
+    flex: 1,
   },
   verifyTitle: {
     fontSize: 24,
@@ -110,19 +139,17 @@ const styles = StyleSheet.create({
   },
   verifySubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 20,
   },
-  warningText: {
-    fontSize: 12,
-    color: '#FF3B30',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 18,
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginVertical: 20,
   },
   inputContainer: {
-    marginBottom: 25,
+    marginTop: 110,
   },
   inputLabel: {
     fontSize: 14,
@@ -134,6 +161,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
     paddingVertical: 8,
+    fontSize: 16,
+    color: 'black',
+  },
+  buttonContainer: {
+    marginBottom: 20,
   },
   verifyButton: {
     backgroundColor: '#FF5722',
@@ -141,7 +173,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
   },
   verifyButtonText: {
     color: 'white',
@@ -150,12 +181,10 @@ const styles = StyleSheet.create({
   },
   copyright: {
     fontSize: 12,
-    color: '#999',
+    color: '#000',
     textAlign: 'center',
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
+    marginTop: 20,
+    marginBottom: 10,
   },
 });
 

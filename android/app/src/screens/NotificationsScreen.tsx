@@ -1,14 +1,21 @@
 import { useState } from "react"
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, ScrollView } from "react-native"
-import { ArrowLeft, Circle ,Search,ShoppingBag} from "react-native-feather"
+import { View, Text, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, TextInput } from "react-native"
+import { ArrowLeft, Circle, Search, ShoppingBag, X } from "react-native-feather"
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-
-const NotificationScreen = ({navigation}) => {
+const NotificationScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState("unread")
-const handleBack = () => {
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchText, setSearchText] = useState("")
+
+  const handleBack = () => {
     navigation.goBack();
   };
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+  };
+
   const notifications = [
     {
       id: 1,
@@ -76,6 +83,14 @@ const handleBack = () => {
     },
   ]
 
+  const filteredNotifications = searchText 
+    ? notifications.filter(notification => 
+        notification.description.toLowerCase().includes(searchText.toLowerCase()) ||
+        notification.statusText.toLowerCase().includes(searchText.toLowerCase()) ||
+        notification.iconText.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : notifications;
+
   const getStatusColor = (status) => {
     switch (status) {
       case "reopened":
@@ -100,13 +115,13 @@ const handleBack = () => {
   const getIconComponent = (icon) => {
     switch (icon) {
       case "maintenance":
-        return <ShoppingBag  color={'black'} width={16} height={16} />
+        return <ShoppingBag color={'black'} width={16} height={16} />
       case "shampoo":
-        return <ShoppingBag  color={'black'} width={16} height={16} />
+        return <ShoppingBag color={'black'} width={16} height={16} />
       case "door":
-        return <ShoppingBag  color={'black'} width={16} height={16} />
+        return <ShoppingBag color={'black'} width={16} height={16} />
       default:
-        return <ShoppingBag  color={'black'} width={16} height={16} />
+        return <ShoppingBag color={'black'} width={16} height={16} />
     }
   }
 
@@ -116,26 +131,54 @@ const handleBack = () => {
 
       {/* Header */}
       <View style={styles.header}>
-  <View style={styles.headerContent}>
-    {/* Back Button */}
-  <TouchableOpacity 
-          onPress={handleBack}
-           style={styles.backButton}>
-             <AntDesign name="back" size={26} style={{  color: "white" }} />
-             </TouchableOpacity>
-    {/* Title */}
-    <Text style={styles.headerTitle}>Notifications</Text>
+        {isSearching ? (
+          <View style={styles.fullSearchContainer}>
+            <TouchableOpacity 
+              onPress={() => {
+                setIsSearching(false);
+                setSearchText('');
+              }} 
+              style={styles.searchBackButton}
+            >
+              <AntDesign name="back" size={26} color="black" />
+            </TouchableOpacity>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search"
+              placeholderTextColor="#999"
+              value={searchText}
+              keyboardAppearance="dark"
+              onChangeText={handleSearch}
+              autoFocus
+            />
+            <TouchableOpacity>
+              <Search color="#000" size={20} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.headerContent}>
+            {/* Back Button */}
+            <TouchableOpacity
+              onPress={handleBack}
+              style={styles.backButton}>
+              <AntDesign name="back" size={26} style={{ color: "white" }} />
+            </TouchableOpacity>
+            {/* Title */}
+            <Text style={styles.headerTitle}>Notifications</Text>
 
-    {/* Search Icon with Circle Background */}
-    <TouchableOpacity style={styles.circleButton}>
-      <View style={styles.circleContainer}>
-        <Circle stroke="#fff" fill="#fff" width={35} height={35} />
-        <Search stroke="black" width={20} height={20} style={styles.searchIcon} />
+            {/* Search Icon with Circle Background */}
+            <TouchableOpacity 
+              style={styles.circleButton}
+              onPress={() => setIsSearching(true)}
+            >
+              <View style={styles.circleContainer}>
+                <Circle stroke="#fff" fill="#fff" width={30} height={30} />
+                <Search stroke="black" width={20} height={20} style={styles.searchIcon} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-    </TouchableOpacity>
-  </View>
-</View>
-
 
       {/* Tabs */}
       <View style={styles.tabContainer}>
@@ -160,33 +203,39 @@ const handleBack = () => {
 
       {/* Notification List */}
       <ScrollView style={styles.notificationList}>
-        {notifications.map((notification) => (
-          <View key={notification.id} style={styles.notificationItem}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatar} />
-            </View>
-            <View style={styles.notificationContent}>
-              <View style={styles.notificationHeader}>
-                <Text style={styles.notificationTitle}>Guest Service</Text>
-                <Text style={styles.notificationTime}>• AYS Pro • now</Text>
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map((notification) => (
+            <View key={notification.id} style={styles.notificationItem}>
+              <View style={styles.avatarContainer}>
+                <View style={styles.avatar} />
               </View>
+              <View style={styles.notificationContent}>
+                <View style={styles.notificationHeader}>
+                  <Text style={styles.notificationTitle}>Guest Service</Text>
+                  <Text style={styles.notificationTime}>• AYS Pro • now</Text>
+                </View>
 
-              <View style={styles.notificationBody}>
-                <Text style={styles.notificationText}>
-                  <Text style={[styles.statusText, { color: getStatusColor(notification.status) }]}>
-                    {notification.statusText}
-                  </Text>{" "}
-                  {notification.description}
-                </Text>
-              </View>
+                <View style={styles.notificationBody}>
+                  <Text style={styles.notificationText}>
+                    <Text style={[styles.statusText, { color: getStatusColor(notification.status) }]}>
+                      {notification.statusText}
+                    </Text>{" "}
+                    {notification.description}
+                  </Text>
+                </View>
 
-              <View style={styles.notificationFooter}>
-                {getIconComponent(notification.icon)}
-                <Text style={styles.iconText}>{notification.iconText}</Text>
+                <View style={styles.notificationFooter}>
+                  {getIconComponent(notification.icon)}
+                  <Text style={styles.iconText}>{notification.iconText}</Text>
+                </View>
               </View>
             </View>
+          ))
+        ) : (
+          <View style={styles.noResults}>
+            <Text style={styles.noResultsText}>No notifications found</Text>
           </View>
-        ))}
+        )}
       </ScrollView>
     </SafeAreaView>
   )
@@ -195,7 +244,7 @@ const handleBack = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#EBF0FA",
   },
   header: {
     backgroundColor: "#000",
@@ -217,6 +266,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+    marginRight:120
   },
   circleButton: {
     padding: 4,
@@ -232,7 +282,26 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 1,  // Ensures it's on top of the circle
   },
-  
+  // Search styles
+  fullSearchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    margin: 10,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  searchBackButton: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    color: "#333",
+    padding: 0,
+  },
   tabContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -326,7 +395,15 @@ const styles = StyleSheet.create({
     color: "grey",
     marginLeft: 6,
   },
+  noResults: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noResultsText: {
+    fontSize: 16,
+    color: '#666',
+  },
 })
 
 export default NotificationScreen
-

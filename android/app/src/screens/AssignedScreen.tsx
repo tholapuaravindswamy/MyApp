@@ -1,248 +1,169 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  StatusBar,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { ChevronDown, Plus } from 'react-native-feather';
+"use client"
 
-const AssignedToScreen = () => {
-  const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('Task');
-  // const HandleSubmit = () => {
-  //   navigation.navigate('Changes'); 
-  // }
-  // Sample assigned users
-  const [assignedUsers, setAssignedUsers] = useState([
-    { id: '1', name: 'Vishal Sinha' },
-    { id: '2', name: 'Biswajit Das' },
-  ]);
+import type React from "react"
+import { useState, useEffect } from "react"
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, ScrollView } from "react-native"
+import AntDesign from "react-native-vector-icons/AntDesign"
 
-  const addAssignee = () => {
-    // In a real app, this would open a modal or navigate to a selection screen
-    console.log('Add assignee');
-  };
+interface Employee {
+  id: string
+  name: string
+}
+
+interface AssignedToScreenProps {
+  navigation?: any
+  route?: {
+    params?: {
+      selectedEmployees?: Employee[]
+    }
+  }
+}
+
+const AssignedToScreen: React.FC<AssignedToScreenProps> = ({ navigation, route }) => {
+  const [employees, setEmployees] = useState<Employee[]>([
+    { id: "1", name: "Employee Name 1" },
+    { id: "2", name: "Employee Name 2" },
+  ])
+
+  useEffect(() => {
+    // Safely access route params with optional chaining
+    if (route?.params?.selectedEmployees) {
+      setEmployees(route.params.selectedEmployees)
+    }
+  }, [route?.params?.selectedEmployees])
+
+  const handleAddEmployee = () => {
+    // Navigate to employee selection screen
+    navigation?.navigate("GuestEmployee", { selectedEmployees: employees })
+  }
+
+  const handleSubmit = () => {
+    console.log("Submit pressed with employees:", employees)
+    navigation?.goBack()
+  }
+
+  // Simple icon component for the chevron
+  const ChevronRightIcon = () => <Text style={{ fontSize: 16, color: "#000" }}>›</Text>
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
-      
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation?.goBack()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-  <AntDesign name="back" size={26} style={{color: "white" }} />
-  </TouchableOpacity>
-          <Text style={styles.headerTitle}>Assigned To</Text>
-      </View>
-      
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        {['Task', 'Guest', 'Changes'].map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[
-              styles.tab,
-              activeTab === tab ? styles.activeTab : null
-            ]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text 
-              style={[
-                styles.tabText,
-                activeTab === tab ? styles.activeTabText : null
-              ]}
-            >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      
-      {/* Content */}
-    {/* Content */}
-<ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-  {activeTab === 'Task' && (
-    <View style={styles.assignedSection}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Assigned To</Text>
-      </View>
-
-      {/* Assignee List */}
-      {assignedUsers.map((user) => (
-        <TouchableOpacity key={user.id} style={styles.assigneeItem}>
-          <Text style={styles.assigneeName}>{user.name}</Text>
-          <ChevronDown width={16} height={16} color="#666666" />
+          <AntDesign name="back" size={26} style={{ color: "black" }} />
         </TouchableOpacity>
-      ))}
+        <Text style={styles.headerTitle}>Assigned To</Text>
+      </View>
 
-      <TouchableOpacity style={styles.addButton} onPress={addAssignee}>
-        <Plus width={16} height={16} color="#333333" style={{ marginStart: 2 }} />
-        <Text style={styles.addButtonText}>Add</Text>
-      </TouchableOpacity>
-    </View>
-  )}
+      <ScrollView style={styles.content}>
+        <View style={styles.card}>
+          {/* Employee Selection Fields */}
+          {employees.map((employee) => (
+            <TouchableOpacity key={employee.id} style={styles.employeeField}>
+              <Text style={styles.employeeText}>{employee.name}</Text>
+              <ChevronRightIcon />
+            </TouchableOpacity>
+          ))}
 
-  {activeTab === 'Guest' && (
-    <View style={{ alignItems: 'center', marginTop: 40 }}>
-      <Text style={{ fontSize: 16, fontWeight: '500' }}>Welcome to Guest Section</Text>
-    </View>
-  )}
+          {/* Add Button */}
+          <TouchableOpacity style={styles.addButton} onPress={handleAddEmployee}>
+            <Text style={styles.addButtonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
 
-  {activeTab === 'Changes' && (
-    <View style={{ alignItems: 'center', marginTop: 40 }}>
-      <Text style={{ fontSize: 16, fontWeight: '500' }}>Welcome to Changes Section</Text>
-    </View>
-  )}
-</ScrollView>
-
-      
-      {/* Submit Button */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.submitButton}
-        // onPress={HandleSubmit}
-        >
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#f0f2f5",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1A1A1A',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderBottomRightRadius:20,
-    borderBottomLeftRadius:20,
+    paddingVertical: 12,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-bottom:10
+    marginRight: 12,
+    padding: 4,
   },
   headerTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 8,
-    bottom:10
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    marginHorizontal: 6,
-    backgroundColor: '#FFFFFF',
-    bottom:12
-  },
-  
-  activeTab: {
-    backgroundColor: '#FF5722',
-    borderColor: '#FF5722',
-  },
-  
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
-  },
-  
-  activeTabText: {
-    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000",
   },
   content: {
     flex: 1,
-  },
-  contentContainer: {
     padding: 16,
   },
-  assignedSection: {
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
     marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+  employeeField: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 12,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
+  employeeText: {
+    fontSize: 16,
+    color: "#666",
   },
   addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf:'flex-end',
-    borderWidth:1,
-    borderRadius:5,
-    backgroundColor:'#E9ECEF',
-    borderColor: '#E9ECEF' 
+    backgroundColor: "#1a1f36",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 25,
+    alignSelf: "flex-start",
+    marginTop: 8,
   },
   addButtonText: {
-    fontSize: 14,
-    color: '#333333',
-    marginLeft: 4,
-    padding:4,
-    fontWeight:'bold'
-  },
-  assigneeItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  assigneeName: {
-    fontSize: 14,
-    color: '#333333',
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
   submitButton: {
-    backgroundColor: '#FF5722',
+    backgroundColor: "#ff5722",
     borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
   submitButtonText: {
-    color: '#FFFFFF',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
-});
+})
 
-export default AssignedToScreen;
+export default AssignedToScreen

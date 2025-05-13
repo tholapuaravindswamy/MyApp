@@ -9,22 +9,32 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from 'react-native';
+
+const { height } = Dimensions.get('window');
 
 const LoginScreen = ({navigation}) => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = () => {
+    navigation.navigate('Verify');
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-      {/* Ensuring the screen starts from the top */}
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardContainer}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer} 
+          keyboardShouldPersistTaps="handled"
+          bounces={false}
+        >
           
           {/* Header Section */}
           <View style={styles.header}>
@@ -37,40 +47,47 @@ const LoginScreen = ({navigation}) => {
           
           {/* Content Section */}
           <View style={styles.content}>
-            <Text style={styles.loginTitle}>Login</Text>
-            <Text style={styles.loginSubtitle}>Please sign in to your existing account</Text>
+            <View style={styles.contentInner}>
+              <Text style={styles.loginTitle}>Login</Text>
+              <Text style={styles.loginSubtitle}>Please sign in to your existing account</Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>User ID</Text>
-              <TextInput
-                style={styles.input}
-                value={userId}
-                onChangeText={setUserId}
-                autoCapitalize="none"
-              />
+              <View style={styles.formContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>User ID</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={userId}
+                    onChangeText={setUserId}
+                    autoCapitalize="none"
+                    placeholderTextColor="#999"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Password</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    placeholderTextColor="#999"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={styles.loginButton}
+                  onPress={handleLogin}
+                >
+                  <Text style={styles.loginButtonText}>Login</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Password</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-            </View>
-
-            <TouchableOpacity 
-        style={styles.loginButton}
-        onPress={() => navigation.navigate('Verify')}
-      >
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
 
             {/* Footer Section */}
             <Text style={styles.copyright}>© 2025 NeoTeknos Hospitality. All rights reserved.</Text>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -89,7 +106,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    height: 250, 
+    height: height * 0.35, // 30% of screen height
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -121,13 +138,17 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+  },
+  contentInner: {
+    flex: 1,
   },
   loginTitle: {
     fontSize: 24,
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+    marginTop: 20,
     marginBottom: 10,
   },
   loginSubtitle: {
@@ -136,14 +157,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  warningText: {
-    fontSize: 12,
-    color: '#FF3B30',
-    textAlign: 'center',
-    marginBottom: 20,
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginVertical: 20,
   },
   inputContainer: {
-    marginBottom: 15,
+    marginTop: 25,
   },
   inputLabel: {
     fontSize: 14,
@@ -155,7 +175,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
     fontSize: 16,
-    color:'black'
+    color: 'black',
+  },
+  buttonContainer: {
+    marginBottom: 20,
   },
   loginButton: {
     backgroundColor: '#FF5722',
@@ -163,7 +186,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
   loginButtonText: {
     color: 'white',
@@ -172,12 +194,10 @@ const styles = StyleSheet.create({
   },
   copyright: {
     fontSize: 12,
-    color: '#999',
+    color: '#000',
     textAlign: 'center',
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
+    marginTop: 20,
+    marginBottom: 10,
   },
 });
 

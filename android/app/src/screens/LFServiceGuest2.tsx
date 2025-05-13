@@ -43,14 +43,16 @@ const LFSearchGuest2Screen = ({ navigation }) => {
     },
   ];
 
-  const handleSelect = () => {
-    // Handle selection logic
-    if (selectedGuest) {
-      console.log('Selected guest:', selectedGuest);
-      // Navigate or perform action with selected guest
-    }
-  };
-
+  // const handleSelect = () => {
+  //   // Handle selection logic
+  //   if (selectedGuest) {
+  //     console.log('Selected guest:', selectedGuest);
+  //     // Navigate or perform action with selected guest
+  //   }
+  // };
+const handleNEwIcon = () => {
+  navigation.navigate('LFNewGuest')
+}
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -64,7 +66,8 @@ const LFSearchGuest2Screen = ({ navigation }) => {
                   <AntDesign name="back" size={26} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Search Guest</Text>
-        <TouchableOpacity style={styles.newButton}>
+        <TouchableOpacity style={styles.newButton}
+        onPress={handleNEwIcon}>
           <Text style={styles.newButtonText}>
             <Feather name="plus" size={16} color="#000" /> New
           </Text>
@@ -152,7 +155,7 @@ const LFSearchGuest2Screen = ({ navigation }) => {
       {index === 1 && (
         <TouchableOpacity
           style={styles.selectButtonOutside}
-          onPress={handleSelect}
+          // onPress={handleSelect}
         >
           <Text style={styles.selectButtonText}>Select</Text>
         </TouchableOpacity>

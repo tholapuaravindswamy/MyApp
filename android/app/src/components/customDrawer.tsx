@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -6,64 +6,187 @@ import {
   TouchableOpacity,
   Switch,
   ScrollView,
+  Dimensions,
+  Alert,
 } from 'react-native';
 import {
   Home,
-  BarChart2,
+  AlertTriangle,
   Users,
   MessageSquare,
   Video,
-  HelpCircle,
-  LogOut,
+  Menu,
+  Power,
 } from 'react-native-feather';
 import {
-  DrawerContentScrollView,
-  DrawerItemList,
   DrawerContentComponentProps,
+  useDrawerStatus,
 } from '@react-navigation/drawer';
+import {useFocusEffect} from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const {state, navigation} = props;
-  const currentRoute = state.routes[state.index].name;
+  const {state, navigation, descriptors} = props;
+  const isDrawerOpen = useDrawerStatus() === 'open';
+
+  // Get the current active route name
+  const getActiveRouteName = state => {
+    const route = state.routes[state.index];
+
+    // If the route has nested navigator, recursively get the active route
+    if (route.state) {
+      return getActiveRouteName(route.state);
+    }
+
+    return route.name;
+  };
+
+  // Get the parent route name for nested navigators
+  const getParentRouteName = () => {
+    const currentRouteName = getActiveRouteName(state);
+
+    // Handle nested routes
+    const mainRoute = state.routes[state.index];
+
+    if (currentRouteName?.includes('IncidentLog')) {
+      return 'IncidentLog';
+    }
+
+    if (currentRouteName?.includes('LostFound')) {
+      return 'LostFound';
+    }
+
+    if (currentRouteName?.includes('TaskManager')) {
+      return 'TaskManager';
+    }
+
+    if (
+      ['Home', 'Chat', 'Notifications', 'Modules'].includes(currentRouteName)
+    ) {
+      return 'MainTabs';
+    }
+
+    return currentRouteName;
+  };
+
+  const activeRouteName = getParentRouteName();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isDrawerOpen) {
+        setIsLoggedOut(true);
+      }
+    }, [isDrawerOpen]),
+  );
+
+  useEffect(() => {
+    if (isDrawerOpen) {
+      setIsLoggedOut(true); // Automatically turn ON the switch when drawer opens
+    }
+  }, [isDrawerOpen]);
+
+  // Safe navigation function that tries different methods
+  const safeNavigate = (screenName, nestedScreen = null) => {
+    try {
+      // First try the simple navigate approach
+      if (nestedScreen) {
+        // For Guest Service with MainTabs
+        navigation.navigate(screenName, {screen: nestedScreen});
+      } else {
+        // For other screens
+        navigation.navigate(screenName);
+      }
+
+      // Close the drawer after navigation
+      setTimeout(() => {
+        navigation.closeDrawer();
+      }, 100);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // If simple navigation fails, try CommonActions as fallback
+      try {
+        if (nestedScreen) {
+          // For Guest Service with MainTabs
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: screenName,
+                  state: {
+                    routes: [{name: nestedScreen}],
+                  },
+                },
+              ],
+            }),
+          );
+        } else {
+          // For other screens
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: screenName}],
+            }),
+          );
+        }
+
+        // Close the drawer after navigation
+        setTimeout(() => {
+          navigation.closeDrawer();
+        }, 100);
+      } catch (fallbackError) {
+        console.error('Fallback navigation error:', fallbackError);
+        Alert.alert(
+          'Navigation Error',
+          'Could not navigate to the selected screen.',
+        );
+      }
+    }
+  };
 
   const menuItems = [
     {
-      name: 'Home',
+      name: 'Guest Service',
+      route: 'MainTabs',
       icon: (color: string) => <Home color={color} size={22} />,
-      onPress: () => navigation.navigate('MainTabs'),
+      onPress: () => {
+        // Try to navigate to GuestService with MainTabs
+        safeNavigate('GuestService', 'MainTabs');
+      },
     },
     {
-      name: 'Analytics',
-      icon: (color: string) => <BarChart2 color={color} size={22} />,
-      onPress: () => navigation.navigate('Analytics'),
+      name: 'Incident Log',
+      route: 'IncidentLog',
+      icon: (color: string) => <AlertTriangle color={color} size={25} />,
+      onPress: () => {
+        safeNavigate('IncidentLog');
+      },
     },
     {
-      name: 'Profiles',
+      name: 'Lost & Found',
+      route: 'LostFound',
       icon: (color: string) => <Users color={color} size={22} />,
-      onPress: () => navigation.navigate('UserProfile'),
+      onPress: () => {
+        safeNavigate('LostFound');
+      },
     },
     {
-      name: 'Guest Chat',
+      name: 'Task Manager',
+      route: 'TaskManager',
       icon: (color: string) => <MessageSquare color={color} size={22} />,
-      onPress: () => navigation.navigate('Chat'),
-    },
-    {
-      name: 'Tutorials',
-      icon: (color: string) => <Video color={color} size={22} />,
-      onPress: () => navigation.navigate('Tutorials'),
-    },
-    {
-      name: 'Help',
-      icon: (color: string) => <HelpCircle color={color} size={22} />,
-      onPress: () => navigation.navigate('Help'),
+      onPress: () => {
+        safeNavigate('TaskManager');
+      },
     },
   ];
 
-  const handleLogout = () => {
-    // Implement your logout logic here
-    setIsLoggedOut(!isLoggedOut);
-    // navigation.navigate('Login');
+  const handleLogout = (value: boolean) => {
+    setIsLoggedOut(value);
+    navigation.navigate('Login');
+    if (!value) {
+      props.navigation.closeDrawer();
+    }
   };
 
   return (
@@ -71,54 +194,85 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.menuTextContainer}>
-          <Text style={styles.bracketText}>[</Text>
-          <Text style={styles.oText}>O</Text>
-          <Text style={styles.bracketText}>]</Text>
+          <Menu color="#fff" size={22} />
           <Text style={styles.menuText}>Menu</Text>
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.outText}>Out</Text>
+          <Text style={styles.outText}>{isLoggedOut ? 'On' : 'Out'}</Text>
           <Switch
             value={isLoggedOut}
-            onValueChange={handleLogout}
+            onValueChange={value => {
+              setIsLoggedOut(value);
+              // if (!value) {
+              //   navigation.closeDrawer();
+              // }
+            }}
             trackColor={{false: '#3e3e3e', true: '#fff'}}
-            thumbColor={isLoggedOut ? '#fff' : '#f4f3f4'}
+            thumbColor={isLoggedOut ? 'green' : 'red'}
             ios_backgroundColor="#3e3e3e"
             style={styles.switch}
           />
         </View>
       </View>
 
-      {/* Menu Items */}
-      <ScrollView style={styles.menuItems}>
-        {menuItems.map((item, index) => {
-          const isActive =
-            (item.name === 'Home' && currentRoute === 'MainTabs') ||
-            item.name === currentRoute;
+      {/* Main content container with flex layout */}
+      <View style={styles.contentContainer}>
+        {/* Menu Items */}
+        <View style={styles.mainMenuContainer}>
+          {menuItems.map((item, index) => {
+            const isActive = item.route === activeRouteName;
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[styles.menuItem, isActive && styles.activeMenuItem]}
+                onPress={item.onPress}>
+                {item.icon(isActive ? '#000' : '#fff')}
+                <Text
+                  style={[
+                    styles.menuItemText,
+                    isActive && styles.activeMenuItemText,
+                  ]}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[styles.menuItem, isActive && styles.activeMenuItem]}
-              onPress={item.onPress}>
-              {item.icon(isActive ? '#fff' : '#fff')}
-              <Text
-                style={[
-                  styles.menuItemText,
-                  isActive && styles.activeMenuItemText,
-                ]}>
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {/* Bottom Menu - Always at the bottom */}
+        <View style={styles.bottomMenu}>
+          {/* Tutorials */}
+          <TouchableOpacity
+            style={[
+              styles.menuItem,
+              activeRouteName === 'Tutorials' && styles.activeMenuItem,
+            ]}
+            onPress={() => {
+              // navigation.navigate('Tutorials');
+              navigation.closeDrawer();
+            }}>
+            <Video
+              color={activeRouteName === 'Tutorials' ? '#000' : '#fff'}
+              size={22}
+            />
+            <Text
+              style={[
+                styles.menuItemText,
+                activeRouteName === 'Tutorials' && styles.activeMenuItemText,
+              ]}>
+              Tutorials
+            </Text>
+          </TouchableOpacity>
 
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-          <LogOut color="#fff" size={22} />
-          <Text style={styles.menuItemText}>Logout</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {/* Logout */}
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => handleLogout(false)}>
+            <Power color="#fff" size={22} />
+            <Text style={styles.menuItemText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -128,6 +282,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121212',
   },
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between', // This pushes the bottom menu to the bottom
+  },
+  mainMenuContainer: {
+    paddingTop: 8,
+  },
+  bottomMenu: {
+    marginBottom: 20, // Add some margin at the bottom
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -135,21 +300,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#2a2a2a',
+    borderBottomColor: 'white',
+    marginRight: 20,
+    marginLeft: 20,
   },
   menuTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  bracketText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '300',
-  },
-  oText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '500',
+    right: 10,
   },
   menuText: {
     color: '#fff',
@@ -171,7 +329,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   switch: {
-    transform: [{scaleX: 0.7}, {scaleY: 0.7}],
+    transform: [{scaleX: 0.8}, {scaleY: 0.8}],
   },
   menuItems: {
     flex: 1,
@@ -185,7 +343,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   activeMenuItem: {
-    backgroundColor: '#4169E1',
+    backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 8,
   },
@@ -196,6 +354,7 @@ const styles = StyleSheet.create({
   },
   activeMenuItemText: {
     fontWeight: '500',
+    color: '#000',
   },
 });
 

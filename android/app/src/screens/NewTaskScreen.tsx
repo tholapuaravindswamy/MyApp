@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,71 +6,82 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
-  Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import SelectField from '../components/SelectField';
-import DatePickerField from '../components/DatePickerField';
+import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
-const NewScreen = () => {
-  const navigation = useNavigation();
+const NewScreen = ({ navigation }) => {
 
+  const HandleTaskType = () => {
+    navigation.navigate('TaskType')
+  }
+  const HandleLocation = () => {
+    navigation.navigate('GuestLocation')
+  }
+const HandleCart = () => {
+  navigation.navigate('AddTaskScreen')
+}
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f7fa" />
       
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity 
-          style={styles.backButton}
+          style={styles.backButton} 
           onPress={() => navigation.goBack()}
         >
-  <AntDesign name="back" size={26} style={{ color: "black" }} />
+       <AntDesign name="back" size={26} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>New</Text>
       </View>
       
-      {/* Form */}
-      <View style={styles.form}>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Task Type<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+      {/* Form Card */}
+      <View style={styles.formCard}>
+        {/* Schedule for later */}
+        <TouchableOpacity style={styles.formItem}>
+          <View style={styles.formItemLeft}>
+            <Feather name="calendar" size={20} color="#000" style={styles.formItemIcon} />
+            <Text style={styles.formItemText}>Schedule for later</Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Category<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+        {/* Task Type */}
+        <TouchableOpacity style={styles.formItem}
+          onPress={HandleTaskType}>
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Task Type<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Room/Public Area<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+        {/* Location */}
+        <TouchableOpacity style={styles.formItem}
+        onPress={HandleLocation}>
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Location<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Room/Public Area<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
-        
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Task<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
-        
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Schedule</Text>
-          <DatePickerField placeholder="Select Option" />
-        </View>
+        {/* Cart */}
+        <TouchableOpacity style={styles.formItem}
+        onPress={HandleCart}>
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Cart<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
       </View>
       
-      {/* Create Button */}
-      <TouchableOpacity 
-        style={styles.createButton}
-        onPress={() => navigation.navigate('AddTaskScreen')}
-      >
-        <Text style={styles.createButtonText}>Create</Text>
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.submitButton}>
+        <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -79,51 +90,68 @@ const NewScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    backgroundColor: '#f5f7fa',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingHorizontal: 16,
+ 
   },
   backButton: {
-    padding: 5,
-  },
-  backIcon: {
-    fontSize: 24,
-    fontWeight: '300',
+    padding: 4,
+    marginRight: 12,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '500',
-    marginLeft: 10,
-    color:'black'
+    fontWeight: '600',
+    color: '#000',
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    margin: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  fieldContainer: {
-    marginBottom: 20,
+  formItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
-  fieldLabel: {
+  formItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  formItemIcon: {
+    marginRight: 12,
+  },
+  formItemText: {
     fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color:'black'
+    color: '#000',
   },
   requiredStar: {
     color: '#FF5722',
   },
-  createButton: {
+  divider: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginHorizontal: 16,
+  },
+  submitButton: {
     backgroundColor: '#FF5722',
     borderRadius: 8,
-    paddingVertical: 10,
+    marginHorizontal: 16,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
   },
-  createButtonText: {
+  submitButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',

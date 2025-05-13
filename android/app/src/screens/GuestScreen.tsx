@@ -237,10 +237,7 @@ bottom:10
         alignItems: 'center',
         marginBottom: 10,
       },
-      checkLabel: {
-        marginLeft: 8,
-        color: '#0D1B2A',
-      },
+
   });
   
 export default GuestScreen;

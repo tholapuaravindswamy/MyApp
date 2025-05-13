@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,87 +6,95 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
-  Platform,
-  KeyboardAvoidingView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import SelectField from '../components/SelectField';
-import DatePickerField from '../components/DatePickerField';
+import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
 
-const LFNewScreen = () => {
-  const navigation = useNavigation();
+const LFNewScreen = ({ navigation }) => {
 
+  const HandleLocation = () => {
+    navigation.navigate('LFLocation')
+  }
+
+  const HandleFounded = () => {
+    navigation.navigate('LFFounded')
+  }
+ 
+const HandleArticalCount = () => {
+  navigation.navigate('LFArticalCount')
+}
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f7fa" />
+      
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity 
-          style={styles.backButton}
+          style={styles.backButton} 
           onPress={() => navigation.goBack()}
         >
-  <AntDesign name="back" size={26} style={{ color: "black" }} />
+       <AntDesign name="back" size={26} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>New</Text>
       </View>
       
-      {/* Form */}
-      <View style={styles.form}>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Location Type<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+      {/* Form Card */}
+      <View style={styles.formCard}>
+        {/* Schedule for later */}
+        <TouchableOpacity style={styles.formItem}>
+          <View style={styles.formItemLeft}>
+            <Feather name="calendar" size={20} color="#000" style={styles.formItemIcon} />
+            <Text style={styles.formItemText}>Found Date<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Location<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+        {/* Task Type */}
+        <TouchableOpacity style={styles.formItem}
+          onPress={HandleLocation}>
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Found Location<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Guest<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
+        {/* Location */}
+        <TouchableOpacity style={styles.formItem}
+        onPress={HandleFounded}>
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Found By<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
         
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Found Date<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
-        
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Found By<Text style={styles.requiredStar}>*</Text></Text>
-          <SelectField placeholder="Select Option" />
-        </View>
-        <KeyboardAvoidingView>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldLabel}>Article Count<Text style={styles.requiredStar}>*</Text></Text>
-          <TextInput
-        placeholder='Enter Number'
-        keyboardType='numeric'
-        placeholderTextColor={'#ccc'}
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 4,
-          padding: 10,
-          fontSize: 16,
-        }}
-        />
-      </View>
-      </KeyboardAvoidingView>
+        {/* Cart */}
+        <TouchableOpacity style={styles.formItem}
+        // onPress={HandleCart}
+        >
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Guest</Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity style={styles.formItem}
+        onPress={HandleArticalCount}
+        >
+          <View style={styles.formItemLeft}>
+            <Text style={styles.formItemText}>Artical Count<Text style={styles.requiredStar}>*</Text></Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#000" />
+        </TouchableOpacity>
       </View>
       
-      {/* Create Button */}
-      <TouchableOpacity 
-        style={styles.createButton}
-        onPress={() => navigation.navigate('LFArtical')}
-      >
-        <Text style={styles.createButtonText}>Next</Text>
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.submitButton}>
+        <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
-      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -94,51 +102,68 @@ const LFNewScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    backgroundColor: '#f5f7fa',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingHorizontal: 16,
+ 
   },
   backButton: {
-    padding: 5,
-  },
-  backIcon: {
-    fontSize: 24,
-    fontWeight: '300',
+    padding: 4,
+    marginRight: 12,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '500',
-    marginLeft: 10,
-    color:'black'
+    fontWeight: '600',
+    color: '#000',
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    margin: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  fieldContainer: {
-    marginBottom: 20,
+  formItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
-  fieldLabel: {
+  formItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  formItemIcon: {
+    marginRight: 12,
+  },
+  formItemText: {
     fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color:'black'
+    color: '#000',
   },
   requiredStar: {
     color: '#FF5722',
   },
-  createButton: {
+  divider: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginHorizontal: 16,
+  },
+  submitButton: {
     backgroundColor: '#FF5722',
     borderRadius: 8,
-    paddingVertical: 10,
+    marginHorizontal: 16,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
   },
-  createButtonText: {
+  submitButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',

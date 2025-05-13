@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather'; // Use this instead of react-native-feather
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
 const ChatDetailScreen = ({route, navigation}) => {
@@ -121,7 +122,7 @@ const ChatDetailScreen = ({route, navigation}) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Icon name="arrow-left" size={24} color="#fff" />
+  <AntDesign name="back" size={26} style={{  color: "white" }} />
         </TouchableOpacity>
 
         <View style={styles.userInfo}>
@@ -136,13 +137,13 @@ const ChatDetailScreen = ({route, navigation}) => {
 
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.headerButton}>
-            <Icon name="camera" size={20} color="#fff" />
+            <Icon name="video" size={20} color="#000" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <Icon name="phone" size={20} color="#fff" />
+            <Icon name="phone" size={20} color="#000" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <Icon name="more-vertical" size={20} color="#fff" />
+            <Icon name="search" size={20} color="#000" />
           </TouchableOpacity>
         </View>
       </View>
@@ -237,10 +238,13 @@ const styles = StyleSheet.create({
   },
   headerActions: {
     flexDirection: 'row',
+
   },
   headerButton: {
     padding: 5,
     marginLeft: 15,
+    backgroundColor:"white",
+    borderRadius:20
   },
   messagesContainer: {
     padding: 15,

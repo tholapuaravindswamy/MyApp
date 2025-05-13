@@ -8,81 +8,81 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../App';
 
-type AcceptanceScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Acceptance'>;
+const { height } = Dimensions.get('window');
 
-type Props = {
-  navigation: AcceptanceScreenNavigationProp;
-};
-
-const { width, height } = Dimensions.get('window');
-
-const HotelAcceptanceScreen: React.FC<Props> = ({ navigation }) => {
-  const handleAccept = (): void => {
+const HotelAcceptanceScreen = ({ navigation }) => {
+  const handleAccept = () => {
     navigation.navigate('LocationAccessScreen');
   };
 
-  const handlePrivacyPolicy = (): void => {
-    // Navigate to Privacy Policy
+  const handlePrivacyPolicy = () => {
     navigation.navigate('PrivacyPolicy');
   };
 
-  const handleTermsOfUse = (): void => {
+  const handleTermsOfUse = () => {
     navigation.navigate('TermsOfUse');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-
-      {/* Top section with logo and title */}
-      <View style={styles.topSection}>
-        <View style={styles.logoContainer}>
-          <View style={styles.logo} />
-        </View>
-
-        <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
-        <Text style={styles.subtitle}>
-          <Text style={styles.orangeText}>Effortlessly Powerful, Incredibly Simple.</Text>
-        </Text>
-      </View>
-
-      {/* Bottom section with acceptance form */}
-      <View style={styles.bottomSection}>
-        <View style={styles.formContainer}>
-          <Text style={styles.acceptanceTitle}>Acceptance</Text>
-          <Text style={styles.acceptanceSubtitle}>
-            Please accept the terms and conditions
-          </Text>
-
-          {/* Terms text with links */}
-          <View style={styles.termsContainer}>
-            <Text style={styles.termsText}>
-              I have read and understood the{'\n'}
-              <Text style={styles.link} onPress={handlePrivacyPolicy}>
-                Privacy Policy
-              </Text>
-              {' & '}
-              <Text style={styles.link} onPress={handleTermsOfUse}>
-                Term Of Use
-              </Text>
-            </Text>
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      
+      <ScrollView 
+        bounces={false} 
+        contentContainerStyle={styles.scrollContainer}
+      >
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <View style={styles.logo} />
           </View>
-
-          {/* Accept button */}
-          <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
-            <Text style={styles.acceptButtonText}>Accept</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>The Ultimate Hotel Operating System</Text>
+          <Text style={styles.subtitle}>
+            <Text style={styles.orangeText}>Effortlessly Powerful, Incredibly Simple.</Text>
+          </Text>
         </View>
-      </View>
-
-      {/* Footer */}
-      <Text style={styles.footerText}>
-        © 2025 NeoTeknos Hospitality. All rights reserved.
-      </Text>
+        
+        {/* Content Section */}
+        <View style={styles.content}>
+          <View style={styles.contentInner}>
+            <Text style={styles.acceptanceTitle}>Acceptance</Text>
+            <Text style={styles.acceptanceSubtitle}>
+              Please accept the terms and conditions
+            </Text>
+            
+            <View style={styles.formContainer}>
+              {/* Terms text with links */}
+              <View style={styles.termsContainer}>
+                <Text style={styles.termsText}>
+                  I have read and understood the
+                  <Text style={styles.link} onPress={handlePrivacyPolicy}>
+                    Privacy Policy
+                  </Text>
+                  {' & '}
+                  <Text style={styles.link} onPress={handleTermsOfUse}>
+                    Term Of Use
+                  </Text>
+                </Text>
+              </View>
+            </View>
+            
+            <View style={styles.buttonContainer}>
+              {/* Accept button */}
+              <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
+                <Text style={styles.acceptButtonText}>Accept</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          
+          {/* Footer */}
+          <Text style={styles.copyright}>
+            © 2025 NeoTeknos Hospitality. All rights reserved.
+          </Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -92,64 +92,72 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  topSection: {
-    flex: 0.5,
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  header: {
+    height: height * 0.35, // 30% of screen height
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
   logoContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   logo: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 12,
+    width: 60,
+    height: 60,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
   },
   title: {
+    color: 'white',
     fontSize: 19,
     fontWeight: 'bold',
-    color: '#fff',
     textAlign: 'center',
   },
   subtitle: {
-    marginTop: 5,
     fontSize: 15,
     textAlign: 'center',
+    marginTop: 5,
   },
   orangeText: {
-    color: '#FF5C00',
+    color: '#FF5722',
   },
-  bottomSection: {
+  content: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    justifyContent: 'space-between', // Make sure content is spaced properly
+    padding: 20,
+    justifyContent: 'space-between',
+  },
+  contentInner: {
+    flex: 1,
+  },
+  acceptanceTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+    color: 'black'
+  },
+  acceptanceSubtitle: {
+    fontSize: 14,
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   formContainer: {
     flex: 1,
-    paddingHorizontal: 25,
-    paddingTop: 40,
-    paddingBottom: 20,
-    justifyContent: 'center', // Center the form vertically
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  acceptanceTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: 'black',
-  },
-  acceptanceSubtitle: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 25,
-    textAlign: 'center',
+    marginVertical: 20,
   },
   termsContainer: {
-    marginTop: 70, // Adjusted to ensure terms are not pushed too far down
+    padding: 1,
+    marginTop:90
   },
   termsText: {
     fontSize: 14,
@@ -158,33 +166,31 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   link: {
-    color: '#FF5C00',
+    color: '#FF5722',
     textDecorationLine: 'underline',
   },
+  buttonContainer: {
+    marginBottom: 20,
+  },
   acceptButton: {
-    width: '100%', // Ensuring button takes full width
+    backgroundColor: '#FF5722',
+    borderRadius: 5,
     height: 40,
-    backgroundColor: '#FF5C00',
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    width: '100%',
   },
   acceptButtonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  footerText: {
+  copyright: {
     fontSize: 12,
-    color: '#666',
+    color: '#000',
     textAlign: 'center',
     marginTop: 20,
-    paddingBottom: 20, // Ensure the footer stays at the bottom of the screen
-    position: 'absolute', // Position footer at the bottom
-    bottom: 0,
-    left: 0,
-    right: 0,
+    marginBottom: 10,
   },
 });
 
