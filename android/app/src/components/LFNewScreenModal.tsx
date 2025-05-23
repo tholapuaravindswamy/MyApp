@@ -10,6 +10,7 @@ import AnimatedModal from "./AnimatedModal"
 import LFLocationModal from "./LFLocationModal"
 import LFFoundByModal from "./LFFoundByModal"
 import LFArticleCountModal from "./LFArticleCountModal"
+import LFGuestDetails from "./LFGuestDetails"
 
 const { height } = Dimensions.get("window")
 
@@ -31,6 +32,7 @@ const LFNewScreenModal: React.FC<LFNewScreenModalProps> = ({ visible, onClose, n
   // State for sub-modals visibility
   const [locationModalVisible, setLocationModalVisible] = useState(false)
   const [foundByModalVisible, setFoundByModalVisible] = useState(false)
+  const [guestDetailsModalVisible, setGuestDetailsModalVisible] = useState(false)
   const [articleCountModalVisible, setArticleCountModalVisible] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [formData, setFormData] = useState<FormData>({
@@ -74,6 +76,12 @@ const LFNewScreenModal: React.FC<LFNewScreenModalProps> = ({ visible, onClose, n
 
   const handleArticleCountSelect = (count: string) => {
     setFormData((prev) => ({ ...prev, articleCount: count }))
+  }
+
+  const handleGuestSubmit = (guestData: any) => {
+    // Create a guest display name from the guest data
+    const guestName = `${guestData.firstName} ${guestData.lastName}`
+    setFormData((prev) => ({ ...prev, guest: guestName }))
   }
 
   // Check if form is valid for submission
@@ -166,7 +174,7 @@ const LFNewScreenModal: React.FC<LFNewScreenModalProps> = ({ visible, onClose, n
             <View style={styles.divider} />
 
             {/* Guest */}
-            <TouchableOpacity style={styles.formItem}>
+            <TouchableOpacity style={styles.formItem} onPress={() => setGuestDetailsModalVisible(true)}>
               <View style={styles.formItemLeft}>
                 <Text style={styles.formItemText}>Guest</Text>
               </View>
@@ -193,9 +201,10 @@ const LFNewScreenModal: React.FC<LFNewScreenModalProps> = ({ visible, onClose, n
 
           {/* Submit Button */}
           <TouchableOpacity
-            style={[styles.submitButton,
+            style={[
+              styles.submitButton,
               //  !isFormValid() && styles.submitButtonDisabled
-              ]}
+            ]}
             onPress={handleSubmit}
             // disabled={!isFormValid()}
           >
@@ -214,6 +223,12 @@ const LFNewScreenModal: React.FC<LFNewScreenModalProps> = ({ visible, onClose, n
           visible={foundByModalVisible}
           onClose={() => setFoundByModalVisible(false)}
           onSelect={handleFoundBySelect}
+        />
+
+        <LFGuestDetails
+          visible={guestDetailsModalVisible}
+          onClose={() => setGuestDetailsModalVisible(false)}
+          onSubmit={handleGuestSubmit}
         />
 
         <LFArticleCountModal
@@ -244,7 +259,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    marginBottom:10
+    marginBottom: 10,
   },
   backButton: {
     padding: 4,

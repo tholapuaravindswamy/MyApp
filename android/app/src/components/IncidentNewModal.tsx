@@ -10,6 +10,7 @@ import IncidentCategoryModal from "./IncidentCategoryModal"
 import IncidentDepartmentModal from "./IncidentDepartmentModal"
 import IncidentDescriptionModal from "./IncidentDescriptionModal"
 import IncidentAttachmentModal from "./IncidentAttachmentModal"
+import IncidentGuestDetailsModal from "./IncidentGuestDetailsModal"
 
 const { height, width } = Dimensions.get("window")
 
@@ -45,6 +46,7 @@ interface Attachment {
 const IncidentNewModal: React.FC<IncidentNewModalProps> = ({ visible, onClose, navigation }) => {
   // State for sub-modals visibility
   const [reportedToModalVisible, setReportedToModalVisible] = useState(false)
+  const [GuestDetailsModalVisible, setGuestDetailsModalVisible] = useState(false)
   const [categoryModalVisible, setCategoryModalVisible] = useState(false)
   const [departmentModalVisible, setDepartmentModalVisible] = useState(false)
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false)
@@ -242,7 +244,7 @@ const IncidentNewModal: React.FC<IncidentNewModalProps> = ({ visible, onClose, n
                 <View style={styles.divider} />
 
                 {/* Guest */}
-                <TouchableOpacity style={styles.formItem}>
+                <TouchableOpacity style={styles.formItem}onPress={() => setGuestDetailsModalVisible(true)}>
                   <View style={styles.formItemLeft}>
                     <Text style={styles.formItemText}>Guest</Text>
                   </View>
@@ -363,7 +365,11 @@ const IncidentNewModal: React.FC<IncidentNewModalProps> = ({ visible, onClose, n
           setReportedToModalVisible(false)
         }}
       />
-
+      <IncidentGuestDetailsModal
+        visible={GuestDetailsModalVisible}
+        onClose={() => setGuestDetailsModalVisible(false)}
+       
+      />
       <IncidentCategoryModal
         visible={categoryModalVisible}
         onClose={() => setCategoryModalVisible(false)}

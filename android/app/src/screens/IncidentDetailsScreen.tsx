@@ -7,6 +7,7 @@ import { ChevronUp, ChevronDown } from "react-native-feather"
 import AntDesign from "react-native-vector-icons/AntDesign"
 import IncidentPrimaryDetailsEditModal from "../components/IncidentPrimaryDetailsEditModal"
 import IncidentDetailsEditModal from "../components/IncidentDetailsEditModal"
+import IncidentGuestScreen from "./IncidentGuestDetailsScreen"
 
 const IncidentDetailsScreen = ({ navigation, route }) => {
   const [formData, setFormData] = useState({
@@ -125,15 +126,8 @@ const IncidentDetailsScreen = ({ navigation, route }) => {
   }
 
   // Guest tab content
-  const renderGuestContent = () => {
-    return (
-      <View style={styles.guestContainer}>
-        <Text style={styles.guestTitle}>Welcome to Guest Screen</Text>
-        <Text style={styles.guestDescription}>
-          This section displays guest information related to this incident.{"\n"}Coming Soon...
-        </Text>
-      </View>
-    )
+   const renderGuestContent = () => {
+    return <IncidentGuestScreen navigation={navigation} route={route} incidentId={formData.uid} />
   }
 
   // Booking tab content (incident details)
@@ -410,7 +404,7 @@ const IncidentDetailsScreen = ({ navigation, route }) => {
           >
             <Text style={styles.tabDropdownItemText}>Booking</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+           <TouchableOpacity
             style={[styles.tabDropdownItem, activeTab === "Guest" && styles.activeDropdownItem]}
             onPress={() => handleTabSelect("Guest")}
           >

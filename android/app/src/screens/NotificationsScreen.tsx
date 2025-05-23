@@ -1,7 +1,9 @@
+"use client"
+
 import { useState } from "react"
 import { View, Text, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, TextInput } from "react-native"
-import { ArrowLeft, Circle, Search, ShoppingBag, X } from "react-native-feather"
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Circle, Search, ShoppingBag } from "react-native-feather"
+import AntDesign from "react-native-vector-icons/AntDesign"
 
 const NotificationScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState("unread")
@@ -9,12 +11,12 @@ const NotificationScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("")
 
   const handleBack = () => {
-    navigation.goBack();
-  };
+    navigation.goBack()
+  }
 
   const handleSearch = (text) => {
-    setSearchText(text);
-  };
+    setSearchText(text)
+  }
 
   const notifications = [
     {
@@ -83,13 +85,14 @@ const NotificationScreen = ({ navigation }) => {
     },
   ]
 
-  const filteredNotifications = searchText 
-    ? notifications.filter(notification => 
-        notification.description.toLowerCase().includes(searchText.toLowerCase()) ||
-        notification.statusText.toLowerCase().includes(searchText.toLowerCase()) ||
-        notification.iconText.toLowerCase().includes(searchText.toLowerCase())
+  const filteredNotifications = searchText
+    ? notifications.filter(
+        (notification) =>
+          notification.description.toLowerCase().includes(searchText.toLowerCase()) ||
+          notification.statusText.toLowerCase().includes(searchText.toLowerCase()) ||
+          notification.iconText.toLowerCase().includes(searchText.toLowerCase()),
       )
-    : notifications;
+    : notifications
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -115,13 +118,13 @@ const NotificationScreen = ({ navigation }) => {
   const getIconComponent = (icon) => {
     switch (icon) {
       case "maintenance":
-        return <ShoppingBag color={'black'} width={16} height={16} />
+        return <ShoppingBag color={"black"} width={16} height={16} />
       case "shampoo":
-        return <ShoppingBag color={'black'} width={16} height={16} />
+        return <ShoppingBag color={"black"} width={16} height={16} />
       case "door":
-        return <ShoppingBag color={'black'} width={16} height={16} />
+        return <ShoppingBag color={"black"} width={16} height={16} />
       default:
-        return <ShoppingBag color={'black'} width={16} height={16} />
+        return <ShoppingBag color={"black"} width={16} height={16} />
     }
   }
 
@@ -133,11 +136,11 @@ const NotificationScreen = ({ navigation }) => {
       <View style={styles.header}>
         {isSearching ? (
           <View style={styles.fullSearchContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
-                setIsSearching(false);
-                setSearchText('');
-              }} 
+                setIsSearching(false)
+                setSearchText("")
+              }}
               style={styles.searchBackButton}
             >
               <AntDesign name="back" size={26} color="black" />
@@ -158,19 +161,14 @@ const NotificationScreen = ({ navigation }) => {
         ) : (
           <View style={styles.headerContent}>
             {/* Back Button */}
-            <TouchableOpacity
-              onPress={handleBack}
-              style={styles.backButton}>
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
               <AntDesign name="back" size={26} style={{ color: "white" }} />
             </TouchableOpacity>
             {/* Title */}
             <Text style={styles.headerTitle}>Notifications</Text>
 
             {/* Search Icon with Circle Background */}
-            <TouchableOpacity 
-              style={styles.circleButton}
-              onPress={() => setIsSearching(true)}
-            >
+            <TouchableOpacity style={styles.circleButton} onPress={() => setIsSearching(true)}>
               <View style={styles.circleContainer}>
                 <Circle stroke="#fff" fill="#fff" width={30} height={30} />
                 <Search stroke="black" width={20} height={20} style={styles.searchIcon} />
@@ -232,7 +230,7 @@ const NotificationScreen = ({ navigation }) => {
             </View>
           ))
         ) : (
-          <View style={styles.noResults}>
+          <View style={styles.fullScreenEmptyState}>
             <Text style={styles.noResultsText}>No notifications found</Text>
           </View>
         )}
@@ -244,7 +242,7 @@ const NotificationScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EBF0FA",
+    backgroundColor: "#f5f7fa",
   },
   header: {
     backgroundColor: "#000",
@@ -266,7 +264,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
-    marginRight:120
+    marginRight: 120,
   },
   circleButton: {
     padding: 4,
@@ -280,7 +278,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     position: "absolute",
-    zIndex: 1,  // Ensures it's on top of the circle
+    zIndex: 1, // Ensures it's on top of the circle
   },
   // Search styles
   fullSearchContainer: {
@@ -347,6 +345,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     backgroundColor: "#fff",
+    flex: 1,
   },
   avatarContainer: {
     marginRight: 12,
@@ -359,6 +358,17 @@ const styles = StyleSheet.create({
   },
   notificationContent: {
     flex: 1,
+  },
+  emptyStateContainer: {
+    flex: 1,
+    height: "100%",
+  },
+  emptyNotificationContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 50,
+    width: "100%",
   },
   notificationHeader: {
     flexDirection: "row",
@@ -395,14 +405,18 @@ const styles = StyleSheet.create({
     color: "grey",
     marginLeft: 6,
   },
-  noResults: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   noResultsText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
+    textAlign: "center",
+  },
+  fullScreenEmptyState: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    minHeight: 500,
   },
 })
 
